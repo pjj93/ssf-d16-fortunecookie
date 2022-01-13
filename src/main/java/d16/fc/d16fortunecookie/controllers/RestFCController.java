@@ -42,11 +42,25 @@ public class RestFCController {
         JsonObjectBuilder cookieObjBuilder = Json.createObjectBuilder();
         JsonArrayBuilder cookieArrBuilder = Json.createArrayBuilder();
 
-        for(int i=0; i< cookies.size(); i++) {
-            cookieArrBuilder.add(i, cookies.get(i));
+        for(String c: cookies) {
+            cookieArrBuilder.add(c);
         }
+
+/*         cookies.parallelStream()
+            .reduce(
+                cookieArrBuilder, //identity
+                (ab, item) -> ab.add(item),
+                (ab0, ab1) -> {
+                    JsonArray a = ab1.build();
+                    for (int i=0; i< a.size(); i++)
+                        ab0.add(a.get(i));
+                    return ab0;
+                }
+            ); */  //stream to add cookies in parallel execution
+        
         JsonArray cookieArr = cookieArrBuilder.build();
-        cookieObjBuilder.add("cookies", cookieArr);
+        cookieObjBuilder.add("cookies", cookieArr).add("timestamp", System.currentTimeMillis());
+
         JsonObject cookieObj = cookieObjBuilder.build();
     
         return ResponseEntity.ok(cookieObj.toString());
